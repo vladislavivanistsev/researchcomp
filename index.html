@@ -131,6 +131,14 @@
     label:hover { background-color: #f9b234; }
     nav ul li a:hover { color: #f9b234; }
     nav ul li a[data-target="research"]:hover { color: #1d71b9; }
+
+    /* Mobile settings */
+    @media (max-width: 600px) {
+        body, p, label, .description, input, button, legend, h2, h3 {
+            font-size: 16px !important;
+        }
+    }
+
     /* Printing settings */
     @media print {
       /* Hide everything except #report */
