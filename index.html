@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Interactive Self-Evaluation Tool Following the European Competence Framework for Researchers</title>
+  <title>ResearchCOMP – Interactive Self-Evaluation Tool Following the European Competence Framework for Researchers</title>
   <meta name="description" content="An interactive self-evaluation tool aligned with the European Competence Framework for Researchers. Allow users to assess their skills and track progress in research competences." />
   <meta name="keywords" content="interactive, self-evaluation, tool, European competence framework for researchers, research competences, research skill assessment, career development plan, curriculum vitae, academic career, " />
   <meta name="author" content="Vladislav Ivanistsev, OpenAI ChatGPT o3 Model" />
@@ -127,9 +127,10 @@
     nav ul li a[data-target="research"] { background-color: #f9b234; color: #fff; }
     /* If desired, keep 'report' neutral or pick a color */
     nav ul li a[data-target="report"] { background-color: #555; color: #fff; }
+    nav ul li a[data-target="info"] { background-color: #000; color: #fff; }
     /* highlight on hover */
     label:hover { background-color: #f9b234; }
-    nav ul li a:hover { color: #f9b234; }
+    nav ul li a:hover { color: #555; }
     /* Printing settings */
     @media print {
       /* Hide everything except #report */
@@ -169,6 +170,7 @@
       <li><a href="#" data-target="tools">Managing research tools</a></li>
       <li><a href="#" data-target="research">Doing research</a></li>
       <li><a href="#" data-target="report">Report</a></li>
+      <li><a href="#" data-target="info">Info</a></li>
     </ul>
   </nav>
 
@@ -2267,6 +2269,39 @@
     <div id="summary"></div>
   </div>
 
+
+
+  <!-- New Tab for Info / Disclaimer -->
+<div id="info" class="tab-content">
+  <h2>Info</h2>
+  <div>
+    <h3>Disclaimer and License</h3>
+    <p>
+      <strong>Original PDF Content:</strong><br>
+      This tool includes text from the European Competence Framework for Researchers PDF,
+      which is © European Union, 2024. Reproduction or reuse of that text
+      may require acknowledgment of the source. Please refer to the official publication or
+      the <a href="https://commission.europa.eu/about-european-commission/service-standards-and-principles/transparency/reuse-commission-documents_en"
+      target="_blank">European Commission reuse policy</a> for details.
+    </p>
+    <p>
+      <strong>Code &amp; Tool License:</strong><br>
+      The HTML, CSS, and JavaScript code for this interactive self-evaluation tool is
+      released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.
+      Anyone is free to use, modify, and distribute the code for any purpose, subject
+      to the terms of that license.
+    </p>
+    <p>
+      <strong>Authors &amp; Attribution:</strong><br>
+      Created by Vladislav Ivanistsev and OpenAI ChatGPT (o3 model). This project is
+      provided as-is, without any official endorsement by or affiliation with the
+      European Commission.
+    </p>
+  </div>
+</div>
+
+  
+  
 <script>
 /* ========================
    TAB SWITCHING + SUMMARY
