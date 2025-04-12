@@ -1,0 +1,2480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Self-Evaluation Tool Following the European Competence Framework for Researchers</title>
+  <meta name="description" content="An interactive self-evaluation tool aligned with the European Competence Framework for Researchers. Allow users to assess their skills and track progress in research competences." />
+  <meta name="keywords" content="interactive, self-evaluation, tool, European competence framework for researchers, research competences, research skill assessment, career development plan, curriculum vitae, academic career, " />
+  <meta name="author" content="Vladislav Ivanistsev, OpenAI ChatGPT o3 Model" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://github.com/vladislavivanistsev/ResearchCOMP" />
+  <style>
+    body {
+      font-family: Calibri, sans-serif;
+      margin: 20px;
+      line-height: 1.5;
+      font-size:150%;
+    }
+    div h2 {margin:20px 0 10px 0}
+    /* Horizontal menu styling */
+    nav {
+      position: -webkit-sticky; /* For Safari support */
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      background-color: #333; /* or another color */
+      /* any additional styling you need */
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      background-color: #333;
+      overflow: hidden;
+    }
+    nav ul li {
+      float: left;
+    }
+    nav ul li a {
+      display: block;
+      color: white;
+      padding: 1ex 1em;
+      text-decoration: none;
+    }
+    nav ul li a.active,
+    nav ul li a:hover {
+      background-color: #555;
+    }
+    .clearfix::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    /* Tab content styling */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    fieldset {
+      margin-bottom: 1em;
+      padding: 1ex;
+      border: 1px solid #ccc;
+    }
+    legend {
+      font-weight: bold;
+      font-size: 1.2em;
+      padding: 0 5px;
+    }
+    .description {
+      font-style: italic;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+    input[type="checkbox"] {
+      margin-right: 1ex;
+    }
+    /* Level color coding */
+    .foundational {
+      color: #1d1d1d;
+    }
+    .intermediate {
+      color: #603cba;
+    }
+    .advanced {
+      color: #2d89ef;
+    }
+    .expert {
+      color: #00aba9;
+    }
+    /* Summary output style */
+    #summary {
+      margin-top: 1em;
+      padding: 1ex;
+      border: 1px solid #888;
+      background-color: #f9f9f9;
+    }
+    /* Topic Text Colors and Bold Font for Headings */
+    #management h2 { background-color: #1d71b9; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    #research h2 { background-color: #f9b234; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    #tools h2 { background-color: #3aaa35; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    #impact h2 { background-color: #951b81; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    #self-management h2 { background-color: #936037; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    #creativity h2 { background-color: #00abc0; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    #collaboration h2 { background-color: #e94e1b; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    #report h2 { background-color: #555; color: #ffffff; font-weight: bold; padding-left:1ex; }
+    /* Apply the same text color and bold font to fieldset legends */
+    #management fieldset legend { color: #1d71b9; font-weight: bold; }
+    #research fieldset legend { color: #f9b234; font-weight: bold; }
+    #tools fieldset legend { color: #3aaa35; font-weight: bold; }
+    #impact fieldset legend { color: #951b81; font-weight: bold; }
+    #self-management fieldset legend { color: #936037; font-weight: bold; }
+    #creativity fieldset legend { color: #00abc0; font-weight: bold; }
+    #collaboration fieldset legend { color: #e94e1b; font-weight: bold; }
+    /* menu colors */
+    nav ul li a[data-target="management"] { background-color: #1d71b9; color: #fff; }
+    nav ul li a[data-target="impact"] { background-color: #951b81; color: #fff; }
+    nav ul li a[data-target="self-management"] { background-color: #936037; color: #fff; }
+    nav ul li a[data-target="creativity"] { background-color: #00abc0; color: #fff; }
+    nav ul li a[data-target="collaboration"] { background-color: #e94e1b; color: #fff; }
+    nav ul li a[data-target="tools"] { background-color: #3aaa35; color: #fff; }
+    nav ul li a[data-target="research"] { background-color: #f9b234; color: #fff; }
+    /* If desired, keep 'report' neutral or pick a color */
+    nav ul li a[data-target="report"] { background-color: #555; color: #fff; }
+    /* highlight on hover */
+    label:hover { background-color: #f9b234; }
+    nav ul li a:hover { color: #f9b234; }
+    /* Printing settings */
+    @media print {
+      /* Hide everything except #report */
+      nav, #title {
+        display: none !important;
+      }
+
+      /* Force #summary to appear */
+      #summary {
+        display: block !important;
+      }
+    }
+    button {
+      background-color: #444;  /* A medium-dark grey background */
+      color: #fff;             /* White text */
+      border: none;            /* No border for a flat look */
+      border-radius: 3px;      /* Slightly rounded corners */
+      padding: 8px 16px;       /* Spacing around the text */
+      cursor: pointer;         /* Cursor changes to pointer on hover */
+      transition: background-color 0.2s ease; /* Smooth hover transition */
+    }
+    button:hover {
+      background-color: #666;  /* Darker grey on hover */
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Horizontal Menu -->
+  <nav class="clearfix">
+    <ul>
+      <li><a href="#" data-target="management" class="active">Managing research</a></li>
+      <li><a href="#" data-target="impact">Making an impact</a></li>
+      <li><a href="#" data-target="self-management">Self-management</a></li>
+      <li><a href="#" data-target="creativity">Cognitive abilities</a></li>
+      <li><a href="#" data-target="collaboration">Working with others</a></li>
+      <li><a href="#" data-target="tools">Managing research tools</a></li>
+      <li><a href="#" data-target="research">Doing research</a></li>
+      <li><a href="#" data-target="report">Report</a></li>
+    </ul>
+  </nav>
+
+  <!-- Management Tab (MANAGING RESEARCH) -->
+  <div id="management" class="tab-content active">
+    <h2>Managing Research</h2>
+    <form id="managementForm">
+      <!-- 1. Mobilise Resources -->
+      <fieldset data-topic="1. Mobilise Resources">
+        <legend>1. Mobilise Resources</legend>
+        <div class="description">
+          Identify key relevant funding sources and prepare research grant applications in order to obtain funds and grants; write research proposals and pitch ideas to convince potential investors (internal or external to the organisation) of the need to fund research initiatives
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="mobilise[]" data-level="Foundational" value="Is aware of funding sources for research projects and of the related application procedures">
+          Is aware of funding sources for research projects and of the related application procedures
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="mobilise[]" data-level="Foundational" value="Contributes to drafting research proposals">
+          Contributes to drafting research proposals
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="mobilise[]" data-level="Intermediate" value="Is familiar with key funding sources and can navigate their application procedures">
+          Is familiar with key funding sources and can navigate their application procedures
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="mobilise[]" data-level="Intermediate" value="Autonomously applies for small research grants and contributes to larger applications">
+          Autonomously applies for small research grants and contributes to larger applications
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="mobilise[]" data-level="Intermediate" value="Recognises the importance of funding of one’s own institution and own research">
+          Recognises the importance of funding of one’s own institution and own research
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="mobilise[]" data-level="Advanced" value="Informs others about relevant funding sources and advises them on application procedures">
+          Informs others about relevant funding sources and advises them on application procedures
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="mobilise[]" data-level="Advanced" value="Leads consortiums in major presenting grant applications">
+          Leads consortiums in major presenting grant applications
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="mobilise[]" data-level="Advanced" value="Actively engages in the funding of one’s own institution">
+          Actively engages in the funding of one’s own institution
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="mobilise[]" data-level="Expert" value="Influences funding policy within own research area">
+          Influences funding policy within own research area
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="mobilise[]" data-level="Expert" value="Leads large and prestigious applications of international and interdisciplinary character">
+          Leads large and prestigious applications of international and interdisciplinary character
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="mobilise[]" data-level="Expert" value="Plays a crucial role in the funding of one’s own institution">
+          Plays a crucial role in the funding of one’s own institution
+        </label>
+      </fieldset>
+      
+      <!-- 2. Manage Projects -->
+      <fieldset data-topic="2. Manage Projects">
+        <legend>2. Manage Projects</legend>
+        <div class="description">
+          Manage and plan various resources (human resources, budget, deadlines, results, quality) necessary for a specific project and for a project portfolio; monitor progress to achieve a goal within set time and budget using project management tools
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="projects[]" data-level="Foundational" value="Is familiar with different project management approaches and tools">
+          Is familiar with different project management approaches and tools
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="projects[]" data-level="Foundational" value="Participates in projects and delivers results according to deadlines">
+          Participates in projects and delivers results according to deadlines
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="projects[]" data-level="Intermediate" value="Effectively uses a broad project management toolkit">
+          Effectively uses a broad project management toolkit
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="projects[]" data-level="Intermediate" value="Defines and designs own research projects">
+          Defines and designs own research projects
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="projects[]" data-level="Intermediate" value="Identifies risks and implements proper mitigation strategies">
+          Identifies risks and implements proper mitigation strategies
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="projects[]" data-level="Advanced" value="Manages multiple projects and identifies their synergies">
+          Manages multiple projects and identifies their synergies
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="projects[]" data-level="Advanced" value="Leverages problems and anticipates and manages conflicts within the project team and with project stakeholders">
+          Leverages problems and anticipates and manages conflicts within the project team and with project stakeholders
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="projects[]" data-level="Expert" value="Is known for outstanding project management skills">
+          Is known for outstanding project management skills
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="projects[]" data-level="Expert" value="Designs the project management and reporting structure for prestigious research projects">
+          Designs the project management and reporting structure for prestigious research projects
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="projects[]" data-level="Expert" value="Takes necessary decisions even when unpopular and is able to successfully convey the reason behind these decisions in complex projects">
+          Takes necessary decisions even when unpopular and is able to successfully convey the reason behind these decisions in complex projects
+        </label>
+      </fieldset>
+      
+      <!-- 3. Negotiate -->
+      <fieldset data-topic="3. Negotiate">
+        <legend>3. Negotiate</legend>
+        <div class="description">
+          Exchange ideas while analysing issues and interests; enable opposing sides to resolve disputes and reach an agreement or make decisions to resolve disputes
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="negotiate[]" data-level="Foundational" value="Knows the fundamentals of negotiation">
+          Knows the fundamentals of negotiation
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="negotiate[]" data-level="Foundational" value="Actively seeks to understand the different viewpoints and motivations of the negotiating parties">
+          Actively seeks to understand the different viewpoints and motivations of the negotiating parties
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="negotiate[]" data-level="Intermediate" value="Contributes to negotiation strategies by developing scenarios and a clear vision">
+          Contributes to negotiation strategies by developing scenarios and a clear vision
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="negotiate[]" data-level="Intermediate" value="Efficiently defends contested arguments">
+          Efficiently defends contested arguments
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="negotiate[]" data-level="Intermediate" value="Knows how to rebut arguments not supported by evidence">
+          Knows how to rebut arguments not supported by evidence
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="negotiate[]" data-level="Advanced" value="Leads the development and implementation of negotiating strategies">
+          Leads the development and implementation of negotiating strategies
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="negotiate[]" data-level="Advanced" value="Demonstrates creativity and anticipatory thinking in negotiating processes">
+          Demonstrates creativity and anticipatory thinking in negotiating processes
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="negotiate[]" data-level="Advanced" value="Leverages solutions in creative ways also away from the negotiating table">
+          Leverages solutions in creative ways also away from the negotiating table
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="negotiate[]" data-level="Expert" value="Advises others of the design and implementation of negotiating strategies">
+          Advises others of the design and implementation of negotiating strategies
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="negotiate[]" data-level="Expert" value="Is known for being an effective negotiator in complex and controversial issues">
+          Is known for being an effective negotiator in complex and controversial issues
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="negotiate[]" data-level="Expert" value="Under change, adapts negotiating strategy in a creative way">
+          Under change, adapts negotiating strategy in a creative way
+        </label>
+      </fieldset>
+      
+      <!-- 4. Evaluate research -->
+      <fieldset data-topic="4. Evaluate research">
+        <legend>4. Evaluate research</legend>
+        <div class="description">
+          Reflect on research activities and learn from successes and failures based on personal experience, feedback or monitoring and evaluation; assess proposals, progress, impact and outcomes of peer researchers
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="evaluate[]" data-level="Foundational" value="Evaluates basic research proposals and the quality of primary and secondary research data">
+          Evaluates basic research proposals and the quality of primary and secondary research data
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="evaluate[]" data-level="Foundational" value="Effectively assesses and reflects over own research process">
+          Effectively assesses and reflects over own research process
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="evaluate[]" data-level="Foundational" value="Provides constructive criticism">
+          Provides constructive criticism
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="evaluate[]" data-level="Intermediate" value="Gives specific evaluative feedback on research proposals">
+          Gives specific evaluative feedback on research proposals
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="evaluate[]" data-level="Intermediate" value="Assesses peers’ research processes">
+          Assesses peers’ research processes
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="evaluate[]" data-level="Intermediate" value="Advises peers in evaluating the quality of research data">
+          Advises peers in evaluating the quality of research data
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="evaluate[]" data-level="Intermediate" value="Effectively provides difficult criticism">
+          Effectively provides difficult criticism
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="evaluate[]" data-level="Advanced" value="Frequently evaluates important research proposals">
+          Frequently evaluates important research proposals
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="evaluate[]" data-level="Advanced" value="Guides peers in how to evaluate their research processes">
+          Guides peers in how to evaluate their research processes
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="evaluate[]" data-level="Advanced" value="Advises others in how to effectively provide and receive constructive criticism">
+          Advises others in how to effectively provide and receive constructive criticism
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="evaluate[]" data-level="Expert" value="Designs evaluation processes for prestigious research projects">
+          Designs evaluation processes for prestigious research projects
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="evaluate[]" data-level="Expert" value="Develops guides for self-monitoring of research processes and for providing constructive criticism">
+          Develops guides for self-monitoring of research processes and for providing constructive criticism
+        </label>
+      </fieldset>
+      
+      <!-- 5. Promote open access publications -->
+      <fieldset data-topic="5. Promote open access publications">
+        <legend>5. Promote open access publications</legend>
+        <div class="description">
+          Develop a strategy to publish research and identify appropriate publication channels; use open publication strategies when possible; be familiar with IT support for research and management of CRIS and institutional repositories; provide licensing and copyright advice, use bibliometric indicators, and measure research impact
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="openaccess[]" data-level="Foundational" value="Is familiar with CRIS and the pros and cons of open and closed access publication channels">
+          Is familiar with CRIS and the pros and cons of open and closed access publication channels
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="openaccess[]" data-level="Foundational" value="Produces publishable material and actively seeks appropriate outlets">
+          Produces publishable material and actively seeks appropriate outlets
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="openaccess[]" data-level="Intermediate" value="Disseminates through a range of publication outlets and seeks open access alternatives">
+          Disseminates through a range of publication outlets and seeks open access alternatives
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="openaccess[]" data-level="Intermediate" value="Assists peers in using IT to support research">
+          Assists peers in using IT to support research
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="openaccess[]" data-level="Intermediate" value="Tracks own research impact with appropriate tools">
+          Tracks own research impact with appropriate tools
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="openaccess[]" data-level="Advanced" value="Actively encourages peers to select open access alternatives when appropriate">
+          Actively encourages peers to select open access alternatives when appropriate
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="openaccess[]" data-level="Advanced" value="Advises peers on licensing and copyright issues">
+          Advises peers on licensing and copyright issues
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="openaccess[]" data-level="Advanced" value="Tracks the institution’s research impact with advanced tools">
+          Tracks the institution’s research impact with advanced tools
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="openaccess[]" data-level="Expert" value="Is a role model within the research community regarding open access publishing">
+          Is a role model within the research community regarding open access publishing
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="openaccess[]" data-level="Expert" value="Designs guides for managing licensing, copyright, and research impact tracking">
+          Designs guides for managing licensing, copyright, and research impact tracking
+        </label>
+      </fieldset>
+    </form>
+  </div>
+
+  <!-- Impact Tab (MAKING AN IMPACT) -->
+  <div id="impact" class="tab-content">
+    <h2>Making an Impact</h2>
+    <form id="impactForm">
+      <!-- 1. Participate in the publication process -->
+      <fieldset data-topic="1. Participate in the publication process">
+        <legend>1. Participate in the publication process</legend>
+        <div class="description">
+          Submit, revise and publish academic research through appropriate dissemination means and participate in peer review processes including open peer review
+        </div>
+        <!-- Foundational (3 items) -->
+        <label class="foundational">
+          <input type="checkbox" name="publish[]" data-level="Foundational" value="Understands the processes of publication both in the traditional and in the Open Science paradigm">
+          Understands the processes of publication both in the traditional and in the Open Science paradigm
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="publish[]" data-level="Foundational" value="Understands how academics communicate research results">
+          Understands how academics communicate research results
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="publish[]" data-level="Foundational" value="Is aware of the diverse outlets for publications and publishes research results with supervision">
+          Is aware of the diverse outlets for publications and publishes research results with supervision
+        </label>
+
+        <!-- Intermediate (4 items) -->
+        <label class="intermediate">
+          <input type="checkbox" name="publish[]" data-level="Intermediate" value="Produces publishable material of high standard">
+          Produces publishable material of high standard
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="publish[]" data-level="Intermediate" value="Collaborates and co-authors with other researchers">
+          Collaborates and co-authors with other researchers
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="publish[]" data-level="Intermediate" value="Peer reviews publications">
+          Peer reviews publications
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="publish[]" data-level="Intermediate" value="Disseminates in a range of research outlets (research, professional and public)">
+          Disseminates in a range of research outlets (research, professional and public)
+        </label>
+
+        <!-- Advanced (4 items) -->
+        <label class="advanced">
+          <input type="checkbox" name="publish[]" data-level="Advanced" value="Regularly publishes in, and is involved in editing academic journals">
+          Regularly publishes in, and is involved in editing academic journals
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="publish[]" data-level="Advanced" value="Actively seeks co-authors and collaborates widely">
+          Actively seeks co-authors and collaborates widely
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="publish[]" data-level="Advanced" value="Is lead author on co-authored outputs">
+          Is lead author on co-authored outputs
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="publish[]" data-level="Advanced" value="Supports less experienced researchers to publish">
+          Supports less experienced researchers to publish
+        </label>
+
+        <!-- Expert (4 items) -->
+        <label class="expert">
+          <input type="checkbox" name="publish[]" data-level="Expert" value="Is well-known for involvement in editing academic journals">
+          Is well-known for involvement in editing academic journals
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="publish[]" data-level="Expert" value="Has multiple high-ranked publications">
+          Has multiple high-ranked publications
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="publish[]" data-level="Expert" value="Serves on influential editorial boards">
+          Serves on influential editorial boards
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="publish[]" data-level="Expert" value="Has published internationally and publicly renowned articles">
+          Has published internationally and publicly renowned articles
+        </label>
+      </fieldset>
+
+      
+      <!-- 2. Disseminate results to the research community -->
+      <fieldset data-topic="2. Disseminate results to the research community">
+        <legend>2. Disseminate results to the research community</legend>
+        <div class="description">
+          Publicly disclose research results via training, conferences, workshops, colloquia and research publications
+        </div>
+        <!-- Foundational (3 items) -->
+        <label class="foundational">
+          <input type="checkbox" name="disseminate[]" data-level="Foundational" value="Engages in knowledge exchange">
+          Engages in knowledge exchange
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="disseminate[]" data-level="Foundational" value="Understands the different ways that research results can be disclosed">
+          Understands the different ways that research results can be disclosed
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="disseminate[]" data-level="Foundational" value="Presents at academic conferences">
+          Presents at academic conferences
+        </label>
+
+        <!-- Intermediate (2 items) -->
+        <label class="intermediate">
+          <input type="checkbox" name="disseminate[]" data-level="Intermediate" value="Communicates research in an accessible way to a diverse research community">
+          Communicates research in an accessible way to a diverse research community
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="disseminate[]" data-level="Intermediate" value="Engages in interdisciplinary knowledge exchange">
+          Engages in interdisciplinary knowledge exchange
+        </label>
+
+        <!-- Advanced (3 items) -->
+        <label class="advanced">
+          <input type="checkbox" name="disseminate[]" data-level="Advanced" value="Publishes scientific results of high-quality and promotes them to other researchers">
+          Publishes scientific results of high-quality and promotes them to other researchers
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="disseminate[]" data-level="Advanced" value="Educates, advises, and guides others on publishing scientific results">
+          Educates, advises, and guides others on publishing scientific results
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="disseminate[]" data-level="Advanced" value="Is known within the research community for disseminating high quality scientific results">
+          Is known within the research community for disseminating high quality scientific results
+        </label>
+
+        <!-- Expert (3 items) -->
+        <label class="expert">
+          <input type="checkbox" name="disseminate[]" data-level="Expert" value="Chairs and leads scientific associations and conferences">
+          Chairs and leads scientific associations and conferences
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="disseminate[]" data-level="Expert" value="Actively promotes the reputation and esteem of the field">
+          Actively promotes the reputation and esteem of the field
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="disseminate[]" data-level="Expert" value="Is a globally renowned authority on own topic and related interdisciplinary areas">
+          Is a globally renowned authority on own topic and related interdisciplinary areas
+        </label>
+      </fieldset>
+
+      
+      <!-- 3. Teach in academic or vocational contexts -->
+      <fieldset data-topic="3. Teach in academic or vocational contexts">
+        <legend>3. Teach in academic or vocational contexts</legend>
+        <div class="description">
+          Instruct students and transfer research content into teaching; supervise and support less experienced researchers
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="teach[]" data-level="Foundational" value="Contributes to teaching at undergraduate level">
+          Contributes to teaching at undergraduate level
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="teach[]" data-level="Foundational" value="Assists in the supervision of undergraduate projects">
+          Assists in the supervision of undergraduate projects
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="teach[]" data-level="Foundational" value="Is aware of how research interacts with education">
+          Is aware of how research interacts with education
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="teach[]" data-level="Intermediate" value="Develops own teaching style">
+          Develops own teaching style
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="teach[]" data-level="Intermediate" value="Assists in the development of student research skills">
+          Assists in the development of student research skills
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="teach[]" data-level="Intermediate" value="Co-supervises postgraduate research projects">
+          Co-supervises postgraduate research projects
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="teach[]" data-level="Intermediate" value="Seeks ways for own research to influence teaching">
+          Seeks ways for own research to influence teaching
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="teach[]" data-level="Advanced" value="Constantly seeks to improve own teaching with different techniques and approaches">
+          Constantly seeks to improve own teaching with different techniques and approaches
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="teach[]" data-level="Advanced" value="Manages educational programmes">
+          Manages educational programmes
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="teach[]" data-level="Advanced" value="Advocates for the teaching-learning-research connection and interaction">
+          Advocates for the teaching-learning-research connection and interaction
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="teach[]" data-level="Advanced" value="Supervises postgraduate researchers">
+          Supervises postgraduate researchers
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="teach[]" data-level="Expert" value="Pursues opportunities to develop research-informed education">
+          Pursues opportunities to develop research-informed education
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="teach[]" data-level="Expert" value="Leads educational programmes and their quality assurance procedures">
+          Leads educational programmes and their quality assurance procedures
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="teach[]" data-level="Expert" value="Is recognized as an inspiring educator and supervisor">
+          Is recognized as an inspiring educator and supervisor
+        </label>
+      </fieldset>
+      
+      <!-- 4. Communicate to the broad public -->
+      <fieldset data-topic="4. Communicate to the broad public">
+        <legend>4. Communicate to the broad public</legend>
+        <div class="description">
+          Tailor communication of scientific findings to non-specialist audiences using various media formats
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="communicate[]" data-level="Foundational" value="Understands and appreciates the value of engaging with the public">
+          Understands and appreciates the value of engaging with the public
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="communicate[]" data-level="Foundational" value="Listens with attention and speaks with intention">
+          Listens with attention and speaks with intention
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="communicate[]" data-level="Foundational" value="Knows the basics of non-scientific argumentation and its differences with scientific argumentation">
+          Knows the basics of non-scientific argumentation and its differences with scientific argumentation
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="communicate[]" data-level="Foundational" value="Presents own research at small-scale events">
+          Presents own research at small-scale events
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="communicate[]" data-level="Intermediate" value="Recognises the mutual benefit of public engagement in research">
+          Recognises the mutual benefit of public engagement in research
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="communicate[]" data-level="Intermediate" value="Contributes to promoting the public understanding of own research area">
+          Contributes to promoting the public understanding of own research area
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="communicate[]" data-level="Intermediate" value="Knows how to present the value of own research and its evidence to a non-scientific audience">
+          Knows how to present the value of own research and its evidence to a non-scientific audience
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="communicate[]" data-level="Advanced" value="Creates a climate where public engagement is valued">
+          Creates a climate where public engagement is valued
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="communicate[]" data-level="Advanced" value="Leads major public engagement projects">
+          Leads major public engagement projects
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="communicate[]" data-level="Advanced" value="Contributes to shaping the public’s conception of own research area">
+          Contributes to shaping the public’s conception of own research area
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="communicate[]" data-level="Advanced" value="Uses different communication forms tailored for different audiences">
+          Uses different communication forms tailored for different audiences
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="communicate[]" data-level="Expert" value="Gives strategic support for the setup of public engagement campaigns">
+          Gives strategic support for the setup of public engagement campaigns
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="communicate[]" data-level="Expert" value="Occupies specific public engagement posts or holds a personal chair">
+          Occupies specific public engagement posts or holds a personal chair
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="communicate[]" data-level="Expert" value="Is renowned for communicating scientific concepts in a clear, charismatic, and attractive manner, using appealing communication tools for the target audience">
+          Is renowned for communicating scientific concepts in a clear, charismatic, and attractive manner, using appealing communication tools for the target audience
+        </label>
+      </fieldset>
+      
+      <!-- 5. Increase the impact of Science on Policy and Society -->
+      <fieldset data-topic="5. Increase the impact of Science on Policy and Society">
+        <legend>5. Increase the impact of Science on Policy and Society</legend>
+        <div class="description">
+          Enhance the use of research in policy making by engaging with policy makers and presenting research findings in a policy friendly format
+        </div>
+        <!-- Foundational (Column 1): 3 items -->
+        <label class="foundational">
+          <input type="checkbox" name="policy[]" data-level="Foundational" value="Understands the policy-making processes relevant for own field of research">
+          Understands the policy-making processes relevant for own field of research
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="policy[]" data-level="Foundational" value="Presents findings in a policy friendly format">
+          Presents findings in a policy friendly format
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="policy[]" data-level="Foundational" value="Understands the wider contexts in which policies are situated">
+          Understands the wider contexts in which policies are situated
+        </label>
+
+        <!-- Intermediate (Column 2): 4 items -->
+        <label class="intermediate">
+          <input type="checkbox" name="policy[]" data-level="Intermediate" value="Recognises the mutual importance of policy making and research">
+          Recognises the mutual importance of policy making and research
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="policy[]" data-level="Intermediate" value="Engages in dialogue with government institutions, stakeholders, and other key organisations">
+          Engages in dialogue with government institutions, stakeholders, and other key organisations
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="policy[]" data-level="Intermediate" value="Is aware of different approaches to knowledge brokering">
+          Is aware of different approaches to knowledge brokering
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="policy[]" data-level="Intermediate" value="Contributes to science-for-policy outputs">
+          Contributes to science-for-policy outputs
+        </label>
+
+        <!-- Advanced (Column 3): 3 items -->
+        <label class="advanced">
+          <input type="checkbox" name="policy[]" data-level="Advanced" value="Writes science-for-policy outputs cited or used by policymakers">
+          Writes science-for-policy outputs cited or used by policymakers
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="policy[]" data-level="Advanced" value="Advices and supports colleagues in writing science-for-policy outputs">
+          Advices and supports colleagues in writing science-for-policy outputs
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="policy[]" data-level="Advanced" value="Builds networks to inform policy making by evidence">
+          Builds networks to inform policy making by evidence
+        </label>
+
+        <!-- Expert (Column 4): 3 items -->
+        <label class="expert">
+          <input type="checkbox" name="policy[]" data-level="Expert" value="Informs political priorities by presenting compelling evidence of challenges or reframing of challenges">
+          Informs political priorities by presenting compelling evidence of challenges or reframing of challenges
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="policy[]" data-level="Expert" value="Is called upon as knowledge broker in crisis/urgent situations">
+          Is called upon as knowledge broker in crisis/urgent situations
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="policy[]" data-level="Expert" value="Is called upon to work directly with high-level policy makers">
+          Is called upon to work directly with high-level policy makers
+        </label>
+      </fieldset>
+
+      
+      <!-- 6. Promote open innovation -->
+      <fieldset data-topic="6. Promote open innovation">
+        <legend>6. Promote open innovation</legend>
+        <div class="description">
+          Apply models, methods and strategies that contribute to innovation through collaboration with external partners
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="innovation[]" data-level="Foundational" value="Understands the role of innovation, creativity, and collaboration with external partners in research">
+          Understands the role of innovation, creativity, and collaboration with external partners in research
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="innovation[]" data-level="Foundational" value="Can engage in interdisciplinary research">
+          Can engage in interdisciplinary research
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="innovation[]" data-level="Foundational" value="Is open to collaboration with external partners">
+          Is open to collaboration with external partners
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="innovation[]" data-level="Intermediate" value="Develops new ways of collaborating with external partners on research topics">
+          Develops new ways of collaborating with external partners on research topics
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="innovation[]" data-level="Intermediate" value="Pursues interdisciplinary research">
+          Pursues interdisciplinary research
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="innovation[]" data-level="Intermediate" value="Identifies promising ideas from external partners">
+          Identifies promising ideas from external partners
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="innovation[]" data-level="Advanced" value="Establishes collaboration platforms for research and co-creation activities">
+          Establishes collaboration platforms for research and co-creation activities
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="innovation[]" data-level="Advanced" value="Leads innovative collaborations with external stakeholders from industry, public and third sectors">
+          Leads innovative collaborations with external stakeholders from industry, public and third sectors
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="innovation[]" data-level="Expert" value="Challenges traditional viewpoints by steering research towards external innovation">
+          Challenges traditional viewpoints by steering research towards external innovation
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="innovation[]" data-level="Expert" value="Has a track record of successful innovation projects in collaboration with external partners">
+          Has a track record of successful innovation projects in collaboration with external partners
+        </label>
+      </fieldset>
+      
+      <!-- 7. Promote the transfer of knowledge -->
+      <fieldset data-topic="7. Promote the transfer of knowledge">
+        <legend>7. Promote the transfer of knowledge</legend>
+        <div class="description">
+          Deploy awareness and strategies aimed at maximising the two-way flow of tools, technology, expertise, and knowledge between research and relevant stakeholders
+        </div>
+        <!-- Foundational (Column 1) -->
+        <label class="foundational">
+          <input type="checkbox" name="transfer[]" data-level="Foundational" value="Understands the process of commercial exploitation of research results">
+          Understands the process of commercial exploitation of research results
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="transfer[]" data-level="Foundational" value="Recognises the value of embedding academia in innovation communities">
+          Recognises the value of embedding academia in innovation communities
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="transfer[]" data-level="Foundational" value="Appreciates the importance of knowledge exchange within society">
+          Appreciates the importance of knowledge exchange within society
+        </label>
+
+        <!-- Intermediate (Column 2) -->
+        <label class="intermediate">
+          <input type="checkbox" name="transfer[]" data-level="Intermediate" value="Develops research ideas with the aims to commercialise them">
+          Develops research ideas with the aims to commercialise them
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="transfer[]" data-level="Intermediate" value="Contributes to knowledge exchange within society">
+          Contributes to knowledge exchange within society
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="transfer[]" data-level="Intermediate" value="Is aware of different methods to commercialise research">
+          Is aware of different methods to commercialise research
+        </label>
+
+        <!-- Advanced (Column 3) -->
+        <label class="advanced">
+          <input type="checkbox" name="transfer[]" data-level="Advanced" value="Turns research into ventures">
+          Turns research into ventures
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="transfer[]" data-level="Advanced" value="Advocates for increased engagement with the innovation community">
+          Advocates for increased engagement with the innovation community
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="transfer[]" data-level="Advanced" value="Builds networks to influence change through knowledge exchange">
+          Builds networks to influence change through knowledge exchange
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="transfer[]" data-level="Advanced" value="Recognises research projects’ potential for new products and novel applications">
+          Recognises research projects’ potential for new products and novel applications
+        </label>
+        <!-- Expert (Column 4) -->
+        <label class="expert">
+          <input type="checkbox" name="transfer[]" data-level="Expert" value="Provides strategic leadership and support to others’ commercialisation projects">
+          Provides strategic leadership and support to others’ commercialisation projects
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="transfer[]" data-level="Expert" value="Has reputation for successful engagement with innovation stakeholders">
+          Has reputation for successful engagement with innovation stakeholders
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="transfer[]" data-level="Expert" value="Stimulates, creates and builds extensive relationships in entrepreneurial/business/commercial contexts">
+          Stimulates, creates and builds extensive relationships in entrepreneurial/business/commercial contexts
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="transfer[]" data-level="Expert" value="Has a track record of successful adoptions of new technologies and/or new ideas">
+          Has a track record of successful adoptions of new technologies and/or new ideas
+        </label>
+      </fieldset>
+    </form>
+  </div>
+
+
+
+<!-- Self-care Tab (SELF-MANAGEMENT) -->
+<div id="self-management" class="tab-content">
+  <h2>Self-management</h2>
+  <form id="selfcareForm">
+
+    <!-- 1. Manage personal professional development -->
+    <fieldset data-topic="1. Manage personal professional development">
+      <legend>1. Manage personal professional development</legend>
+      <div class="description">
+        Take responsibility for lifelong learning and continuous professional development; engage in learning to support and update professional competence and develop personal skills; identify priority areas for professional development based on reflection about own practice and through contact with peers and stakeholders; pursue a cycle of self-improvement and develop credible career plans
+      </div>
+      <!-- Foundational (Column 1) -->
+      <label class="foundational">
+        <input type="checkbox" name="selfdev[]" data-level="Foundational" value="Actively seeks mentoring for career progression and employability development">
+        Actively seeks mentoring for career progression and employability development
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="selfdev[]" data-level="Foundational" value="Actively pursues self and career improvement, and seeks others’ advice on this">
+        Actively pursues self and career improvement, and seeks others’ advice on this
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="selfdev[]" data-level="Foundational" value="Purposefully develops professional and personal skills for self and others">
+        Purposefully develops professional and personal skills for self and others
+      </label>
+      <!-- Intermediate (Column 2) -->
+      <label class="intermediate">
+        <input type="checkbox" name="selfdev[]" data-level="Intermediate" value="Maintains own records of achievements and experiences">
+        Maintains own records of achievements and experiences
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="selfdev[]" data-level="Intermediate" value="Initiates networks and relationships important to career development">
+        Initiates networks and relationships important to career development
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="selfdev[]" data-level="Intermediate" value="Strategically develops both personal and career-oriented skills">
+        Strategically develops both personal and career-oriented skills
+      </label>
+      <!-- Advanced (Column 3) -->
+      <label class="advanced">
+        <input type="checkbox" name="selfdev[]" data-level="Advanced" value="Develops personal skills and skills aligned with employers’ requirements">
+        Develops personal skills and skills aligned with employers’ requirements
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="selfdev[]" data-level="Advanced" value="Coaches others in academic career development">
+        Coaches others in academic career development
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="selfdev[]" data-level="Advanced" value="Uses networks to further the career of others">
+        Uses networks to further the career of others
+      </label>
+      <!-- Expert (Column 4) -->
+      <label class="expert">
+        <input type="checkbox" name="selfdev[]" data-level="Expert" value="Networks in support of the professional development of less experienced researchers at the department">
+        Networks in support of the professional development of less experienced researchers at the department
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="selfdev[]" data-level="Expert" value="Paves the road for successors and the continuation of research in priority areas">
+        Paves the road for successors and the continuation of research in priority areas
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="selfdev[]" data-level="Expert" value="Is known as a reference point in relation to expanding lifelong learning and continuous professional development">
+        Is known as a reference point in relation to expanding lifelong learning and continuous professional development
+      </label>
+    </fieldset>
+
+    <!-- 2. Show entrepreneurial spirit -->
+    <fieldset data-topic="2. Show entrepreneurial spirit">
+      <legend>2. Show entrepreneurial spirit</legend>
+      <div class="description">
+        Demonstrate a proactive mindset and determination to achieve success in business or successfully create it
+      </div>
+      <!-- Foundational (Column 1) -->
+      <label class="foundational">
+        <input type="checkbox" name="entrepreneur[]" data-level="Foundational" value="Demonstrates initiative and seeks opportunities to create value with own research">
+        Demonstrates initiative and seeks opportunities to create value with own research
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="entrepreneur[]" data-level="Foundational" value="Understands the potential of commercialising academic research">
+        Understands the potential of commercialising academic research
+      </label>
+      <!-- Intermediate (Column 2) -->
+      <label class="intermediate">
+        <input type="checkbox" name="entrepreneur[]" data-level="Intermediate" value="Actively and persistently pursues opportunities to create value with own research">
+        Actively and persistently pursues opportunities to create value with own research
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="entrepreneur[]" data-level="Intermediate" value="Takes calculated risks and performs iterations and tests to get feedback on new ideas">
+        Takes calculated risks and performs iterations and tests to get feedback on new ideas
+      </label>
+      <!-- Advanced (Column 3) -->
+      <label class="advanced">
+        <input type="checkbox" name="entrepreneur[]" data-level="Advanced" value="Understands the process behind creating products and services greater than the sum of their parts">
+        Understands the process behind creating products and services greater than the sum of their parts
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="entrepreneur[]" data-level="Advanced" value="Mobilises and engages others in entrepreneurial projects">
+        Mobilises and engages others in entrepreneurial projects
+      </label>
+      <!-- Expert (Column 4) -->
+      <label class="expert">
+        <input type="checkbox" name="entrepreneur[]" data-level="Expert" value="Enables entrepreneurial vison of others">
+        Enables entrepreneurial vison of others
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="entrepreneur[]" data-level="Expert" value="Proactively connects the dots between diverse research fields and new societal trends, needs, and challenges, and makes clear judgment calls about how this can be explored through entrepreneurial activities">
+        Proactively connects the dots between diverse research fields and new societal trends, needs, and challenges, and makes clear judgment calls about how this can be explored through entrepreneurial activities
+      </label>
+    </fieldset>
+
+    <!-- 3. Plan self-organisation -->
+    <fieldset data-topic="3. Plan self-organisation">
+      <legend>3. Plan self-organisation</legend>
+      <div class="description">
+        Identify and prioritise tasks to work autonomously; develop efficient time management and sustainable work/life balance; understand how to behave and work in a sustainable way, including from the environmental point of view, and be mindful of the impact of own activities on the environment
+      </div>
+      <!-- Foundational (Column 1) -->
+      <label class="foundational">
+        <input type="checkbox" name="organisation[]" data-level="Foundational" value="Manages time in own research projects effectively">
+        Manages time in own research projects effectively
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="organisation[]" data-level="Foundational" value="Works autonomously, but actively seeks guidance when necessary">
+        Works autonomously, but actively seeks guidance when necessary
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="organisation[]" data-level="Foundational" value="Is aware of how work-related activities affect the environment">
+        Is aware of how work-related activities affect the environment
+      </label>
+      <!-- Intermediate (Column 2) -->
+      <label class="intermediate">
+        <input type="checkbox" name="organisation[]" data-level="Intermediate" value="Establishes own time management systems">
+        Establishes own time management systems
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="organisation[]" data-level="Intermediate" value="Is forward thinking and adapts to unexpected changes">
+        Is forward thinking and adapts to unexpected changes
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="organisation[]" data-level="Intermediate" value="Sustains a sustainable work/ life balance">
+        Sustains a sustainable work/ life balance
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="organisation[]" data-level="Intermediate" value="Actively seeks out environmentally friendly alternatives for work-related activities">
+        Actively seeks out environmentally friendly alternatives for work-related activities
+      </label>
+      <!-- Advanced (Column 3) -->
+      <label class="advanced">
+        <input type="checkbox" name="organisation[]" data-level="Advanced" value="Identifies synergies between projects to use own time efficiently and productively">
+        Identifies synergies between projects to use own time efficiently and productively
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="organisation[]" data-level="Advanced" value="Manages several complex projects to time, in a sustainable way for self and others">
+        Manages several complex projects to time, in a sustainable way for self and others
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="organisation[]" data-level="Advanced" value="Always prioritises sustainable alternatives in projects and work-related activities">
+        Always prioritises sustainable alternatives in projects and work-related activities
+      </label>
+      <!-- Expert (Column 4) -->
+      <label class="expert">
+        <input type="checkbox" name="organisation[]" data-level="Expert" value="Functions as a role model and a coach in questions about time management">
+        Functions as a role model and a coach in questions about time management
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="organisation[]" data-level="Expert" value="Is known for creating work environment with a sustainable work/life balance">
+        Is known for creating work environment with a sustainable work/life balance
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="organisation[]" data-level="Expert" value="Applies sustainable practices that are considered as exemplary and which are inspirational and imitated by others">
+        Applies sustainable practices that are considered as exemplary and which are inspirational and imitated by others
+      </label>
+    </fieldset>
+
+    <!-- 4. Cope with pressure -->
+    <fieldset data-topic="4. Cope with pressure">
+      <legend>4. Cope with pressure</legend>
+      <div class="description">
+        Handle challenges, disruption, and change and recover from set-backs and adversity
+      </div>
+      <!-- Foundational (Column 1) -->
+      <label class="foundational">
+        <input type="checkbox" name="pressure[]" data-level="Foundational" value="Handles unfamiliar and uncomfortable situations with limited support and supervision">
+        Handles unfamiliar and uncomfortable situations with limited support and supervision
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="pressure[]" data-level="Foundational" value="Perseveres and moves forward in stressful and pressed situations with limited assistance">
+        Perseveres and moves forward in stressful and pressed situations with limited assistance
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="pressure[]" data-level="Foundational" value="Adapts to new cultural contexts">
+        Adapts to new cultural contexts
+      </label>
+      <!-- Intermediate (Column 2) -->
+      <label class="intermediate">
+        <input type="checkbox" name="pressure[]" data-level="Intermediate" value="Manages challenges and makes decisions under uncertainty">
+        Manages challenges and makes decisions under uncertainty
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="pressure[]" data-level="Intermediate" value="Endures setbacks and failures">
+        Endures setbacks and failures
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="pressure[]" data-level="Intermediate" value="Demonstrates high tolerance for stress and pressure">
+        Demonstrates high tolerance for stress and pressure
+      </label>
+      <!-- Advanced (Column 3) -->
+      <label class="advanced">
+        <input type="checkbox" name="pressure[]" data-level="Advanced" value="Develops strategies for dealing with uncertainty and adversity">
+        Develops strategies for dealing with uncertainty and adversity
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="pressure[]" data-level="Advanced" value="Assists others in challenging and adverse situations">
+        Assists others in challenging and adverse situations
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="pressure[]" data-level="Advanced" value="Comfortably makes decisions based on limited information when necessary">
+        Comfortably makes decisions based on limited information when necessary
+      </label>
+      <!-- Expert (Column 4) -->
+      <label class="expert">
+        <input type="checkbox" name="pressure[]" data-level="Expert" value="Is recognised as confident decision-maker in uncertain and adverse situations">
+        Is recognised as confident decision-maker in uncertain and adverse situations
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="pressure[]" data-level="Expert" value="A well-known manager and advisor for those who are operating in uncertain situations and adverse contexts">
+        A well-known manager and advisor for those who are operating in uncertain situations and adverse contexts
+      </label>
+    </fieldset>
+
+  </form>
+</div>
+
+
+
+<!-- Creativity Tab (COGNITIVE ABILITIES) -->
+<div id="creativity" class="tab-content">
+  <h2>Cognitive Abilities</h2>
+  <form id="creativityForm">
+    <!-- 1. Abstract thinking -->
+    <fieldset data-topic="1. Abstract thinking">
+      <legend>1. Abstract thinking</legend>
+      <div class="description">
+        Demonstrate the ability to use concepts in order to make and understand generalisations, and relate or connect them to other items, events, or experiences
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="abstract[]" data-level="Foundational" value="Assimilates concepts from own discipline">
+        Assimilates concepts from own discipline
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="abstract[]" data-level="Foundational" value="Establishes relationships with own knowledge">
+        Establishes relationships with own knowledge
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="abstract[]" data-level="Intermediate" value="Elaborates concepts independently">
+        Elaborates concepts independently
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="abstract[]" data-level="Intermediate" value="Identifies and understands complex trends and patterns">
+        Identifies and understands complex trends and patterns
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="abstract[]" data-level="Advanced" value="Uses with confidence concepts from other disciplines">
+        Uses with confidence concepts from other disciplines
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="abstract[]" data-level="Advanced" value="Provides insights beyond the obvious">
+        Provides insights beyond the obvious
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="abstract[]" data-level="Expert" value="Connects unrelated ideas and concepts to elaborate theories">
+        Connects unrelated ideas and concepts to elaborate theories
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="abstract[]" data-level="Expert" value="Contributes outstanding insights pushing the frontiers of knowledge">
+        Contributes outstanding insights pushing the frontiers of knowledge
+      </label>
+    </fieldset>
+
+    <!-- 2. Critical thinking -->
+    <fieldset data-topic="2. Critical thinking">
+      <legend>2. Critical thinking</legend>
+      <div class="description">
+        Exercise critical judgement and thinking, develop own assumptions, and establish a way of working based on critical thinking.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="critical[]" data-level="Foundational" value="Understands complex arguments">
+        Understands complex arguments
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="critical[]" data-level="Foundational" value="Is humble and curious to listen to others’ thoughts">
+        Is humble and curious to listen to others’ thoughts
+      </label>
+      <!-- Intermediate -->
+      <label class="foundational">
+        <input type="checkbox" name="critical[]" data-level="Foundational" value="Formulates assumptions based on own knowledge and information acquired">
+        Formulates assumptions based on own knowledge and information acquired
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="critical[]" data-level="Intermediate" value="Consciously tries to avoid biased thinking and behaviour">
+        Consciously tries to avoid biased thinking and behaviour
+      </label>
+      <!-- Advanced -->
+      <label class="intermediate">
+        <input type="checkbox" name="critical[]" data-level="Intermediate" value="Makes sound and realistic judgements based on evidence">
+        Makes sound and realistic judgements based on evidence
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="critical[]" data-level="Advanced" value="Includes approaches to ensure focus on critical thinking in research projects">
+        Includes approaches to ensure focus on critical thinking in research projects
+      </label>
+      <!-- Expert -->
+      <label class="advanced">
+        <input type="checkbox" name="critical[]" data-level="Advanced" value="Stimulates critical thinking in less experienced researchers and peers">
+        Stimulates critical thinking in less experienced researchers and peers
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="critical[]" data-level="Expert" value="Builds research processes and environments where critical thinking is central">
+        Builds research processes and environments where critical thinking is central
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="critical[]" data-level="Expert" value="Stimulates critical thinking at discipline/research area and policy levels">
+        Stimulates critical thinking at discipline/research area and policy levels
+      </label>
+    </fieldset>
+
+    <!-- 3. Analytical thinking -->
+    <fieldset data-topic="3. Analytical thinking">
+      <legend>3. Analytical thinking</legend>
+      <div class="description">
+        Using logic and reasoning to develop alternative solutions, conclusions or approaches to problems and identify their strengths and weaknesses.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="analytical[]" data-level="Foundational" value="Analyses basic information, data, and ideas">
+        Analyses basic information, data, and ideas
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="analytical[]" data-level="Foundational" value="Assesses and evaluates own findings and datasets">
+        Assesses and evaluates own findings and datasets
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="analytical[]" data-level="Intermediate" value="Critically analyses complex information, data and ideas from diverse sources">
+        Critically analyses complex information, data and ideas from diverse sources
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="analytical[]" data-level="Intermediate" value="Assesses and evaluates findings and datasets of others">
+        Assesses and evaluates findings and datasets of others
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="analytical[]" data-level="Advanced" value="Masters a broad range of analytical methods, and actively seeks to learn new ones">
+        Masters a broad range of analytical methods, and actively seeks to learn new ones
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="analytical[]" data-level="Advanced" value="Supports less experienced researchers and staff to develop their critical analytical skills">
+        Supports less experienced researchers and staff to develop their critical analytical skills
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="analytical[]" data-level="Expert" value="Makes an outstanding use of logic and reasoning to analyse research problems">
+        Makes an outstanding use of logic and reasoning to analyse research problems
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="analytical[]" data-level="Expert" value="Develops new analytical approaches and methods">
+        Develops new analytical approaches and methods
+      </label>
+    </fieldset>
+
+    <!-- 4. Strategic thinking -->
+    <fieldset data-topic="4. Strategic thinking">
+      <legend>4. Strategic thinking</legend>
+      <div class="description">
+        Develop a vision to turn ideas into action. Obtain and synthesize information to identify and explore trends, opportunities, threats (also based on intuition and creativity) to achieve a long‐term goal and to thrive in a competitive, changing environment. Identify alternative paths to turn ideas into action, select the most appropriate approach and adjust where necessary.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="strategic[]" data-level="Foundational" value="Synthesises basic information, data and ideas">
+        Synthesises basic information, data and ideas
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="strategic[]" data-level="Foundational" value="Creates visionary ideas and/or ways of working">
+        Creates visionary ideas and/or ways of working
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="strategic[]" data-level="Intermediate" value="Develops a vision and research strategy beyond institutional and disciplinary focus">
+        Develops a vision and research strategy beyond institutional and disciplinary focus
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="strategic[]" data-level="Intermediate" value="Positions own research in the field’s research landscape and connects it with existing knowledge">
+        Positions own research in the field’s research landscape and connects it with existing knowledge
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="strategic[]" data-level="Intermediate" value="Critically synthesises complex information, data and ideas from diverse sources">
+        Critically synthesises complex information, data and ideas from diverse sources
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="strategic[]" data-level="Advanced" value="Is recognised as a thought leader and as someone who strategically shapes the broader research agenda">
+        Is recognised as a thought leader and as someone who strategically shapes the broader research agenda
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="strategic[]" data-level="Advanced" value="Understands the broader context of research">
+        Understands the broader context of research
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="strategic[]" data-level="Advanced" value="Establishes new and unexpected connections across research areas and sectors">
+        Establishes new and unexpected connections across research areas and sectors
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="strategic[]" data-level="Expert" value="Strategically aligns own research with institutional and/or disciplinary focus">
+        Strategically aligns own research with institutional and/or disciplinary focus
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="strategic[]" data-level="Expert" value="Ideates visionary research projects">
+        Ideates visionary research projects
+      </label>
+    </fieldset>
+
+    <!-- 5. Systemic thinking -->
+    <fieldset data-topic="5. Systemic thinking">
+      <legend>5. Systemic thinking</legend>
+      <div class="description">
+        Understand and take account of the characteristics of (inter)national research systems where researchers interact with all relevant stakeholders and of the position of individual researchers and their organisation within the system. Situate research activities within the wider context to improve the understanding of complex issues and identify linkages with related issues.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="systemic[]" data-level="Foundational" value="Differentiates between complicated and complex research, challenges and knows why this distinction matters">
+        Differentiates between complicated and complex research, challenges and knows why this distinction matters
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="systemic[]" data-level="Foundational" value="Understands the national and international research landscape of own discipline">
+        Understands the national and international research landscape of own discipline
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="systemic[]" data-level="Intermediate" value="Actively engages in collaborative interactions within the research system">
+        Actively engages in collaborative interactions within the research system
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="systemic[]" data-level="Intermediate" value="Understands the research landscape, and the complex interaction between its actors, beyond own discipline">
+        Understands the research landscape, and the complex interaction between its actors, beyond own discipline
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="systemic[]" data-level="Advanced" value="Enables others to appreciate and engage with complex research challenges">
+        Enables others to appreciate and engage with complex research challenges
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="systemic[]" data-level="Advanced" value="Masters the main components of a specific research system and identifies properties of components and key interactions">
+        Masters the main components of a specific research system and identifies properties of components and key interactions
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="systemic[]" data-level="Expert" value="Establishes relationships with all relevant stakeholders inside and outside academia to develop own research area">
+        Establishes relationships with all relevant stakeholders inside and outside academia to develop own research area
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="systemic[]" data-level="Expert" value="Changes and improves the complex interconnections between research and other sectors">
+        Changes and improves the complex interconnections between research and other sectors
+      </label>
+    </fieldset>
+
+    <!-- 6. Problem solving -->
+    <fieldset data-topic="6. Problem solving">
+      <legend>6. Problem solving</legend>
+      <div class="description">
+        Develop and implement solutions to practical, operational or conceptual problems which arise in the execution of work in a wide range of contexts.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="problem[]" data-level="Foundational" value="Inquires about basic themes of own research">
+        Inquires about basic themes of own research
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="problem[]" data-level="Foundational" value="Elaborates simple research hypotheses">
+        Elaborates simple research hypotheses
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="problem[]" data-level="Intermediate" value="Assesses the effectiveness of own and others’ solutions to research problems">
+        Assesses the effectiveness of own and others’ solutions to research problems
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="problem[]" data-level="Intermediate" value="Formulates and verifies hypotheses addressing a broad range of research problems">
+        Formulates and verifies hypotheses addressing a broad range of research problems
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="problem[]" data-level="Advanced" value="Tackles new, complex, and interdisciplinary problems">
+        Tackles new, complex, and interdisciplinary problems
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="problem[]" data-level="Advanced" value="Challenges existing hypotheses and proposes new ones based on evidence">
+        Challenges existing hypotheses and proposes new ones based on evidence
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="problem[]" data-level="Expert" value="Ideates projects challenging traditional thinking and brings new knowledge through own research">
+        Ideates projects challenging traditional thinking and brings new knowledge through own research
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="problem[]" data-level="Expert" value="Makes major contributions to understanding and solving complex problems">
+        Makes major contributions to understanding and solving complex problems
+      </label>
+    </fieldset>
+
+    <!-- 7. Creativity -->
+    <fieldset data-topic="7. Creativity">
+      <legend>7. Creativity</legend>
+      <div class="description">
+        Develop several ideas and opportunities to create value, including better solutions to existing and new challenges. Explore and experiment with innovative approaches. Combine knowledge and resources to achieve valuable effects.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="creativity[]" data-level="Foundational" value="Is inquisitive, curious, and open-minded">
+        Is inquisitive, curious, and open-minded
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="creativity[]" data-level="Foundational" value="Seeks different perspectives">
+        Seeks different perspectives
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="creativity[]" data-level="Intermediate" value="Generates, expresses, and tests new ideas and solutions">
+        Generates, expresses, and tests new ideas and solutions
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="creativity[]" data-level="Intermediate" value="Explores ideas also from different areas">
+        Explores ideas also from different areas
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="creativity[]" data-level="Advanced" value="Creates novel and valuable ideas">
+        Creates novel and valuable ideas
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="creativity[]" data-level="Advanced" value="Inspires and develops others’ inquiry style">
+        Inspires and develops others’ inquiry style
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="creativity[]" data-level="Expert" value="Expands existing solutions, or proposes new ones, for relevant scientific problems">
+        Expands existing solutions, or proposes new ones, for relevant scientific problems
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="creativity[]" data-level="Expert" value="Challenges the status quo in a visionary way">
+        Challenges the status quo in a visionary way
+      </label>
+    </fieldset>
+  </form>
+</div>
+
+
+
+
+
+  <!-- Collaboration Tab (WORKING WITH OTHERS) as Collaboration -->
+  <div id="collaboration" class="tab-content">
+    <h2>Working with Others</h2>
+    <form id="collaborationForm">
+      <!-- 1. Interact professionally -->
+      <fieldset data-topic="1. Interact professionally">
+        <legend>1. Interact professionally</legend>
+        <div class="description">
+          Show consideration to others and professional collegial behaviour; listen, give and receive feedback and respond perceptively to others; engage effectively and in a goal‐directed manner with other people in a professional setting, including staff supervision and leadership
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="interact[]" data-level="Foundational" value="Listens to other people’s ideas with no prejudice">
+          Listens to other people’s ideas with no prejudice
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="interact[]" data-level="Foundational" value="Understands the value of collegial behaviour and works professionally and collaboratively">
+          Understands the value of collegial behaviour and works professionally and collaboratively
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="interact[]" data-level="Intermediate" value="Asks colleagues for feedback, advice, and critical appraisal of own work">
+          Asks colleagues for feedback, advice, and critical appraisal of own work
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="interact[]" data-level="Intermediate" value="Embraces behaviours that foster effective and positive interactions with colleagues in a goal‐oriented manner">
+          Embraces behaviours that foster effective and positive interactions with colleagues in a goal‐oriented manner
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="interact[]" data-level="Advanced" value="Professionally interacts goal‐oriented/productively with colleagues both in own and other disciplinary areas">
+          Professionally interacts goal‐oriented/productively with colleagues both in own and other disciplinary areas
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="interact[]" data-level="Advanced" value="Supervises and supports the development of less experienced colleagues">
+          Supervises and supports the development of less experienced colleagues
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="interact[]" data-level="Expert" value="Communicates as peers with colleagues of any rank">
+          Communicates as peers with colleagues of any rank
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="interact[]" data-level="Expert" value="Is recognised for own effective leadership style">
+          Is recognised for own effective leadership style
+        </label>
+      </fieldset>
+
+      <!-- 2. Develop networks -->
+      <fieldset data-topic="2. Develop networks">
+        <legend>2. Develop networks</legend>
+        <div class="description">
+          Develop alliances, contacts or partnerships and exchange information; foster integrated and open collaborations where stakeholders co‐create shared value; develop your personal profile and make yourself visible in face‐to‐face and online networking environments
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="networks[]" data-level="Foundational" value="Understands the value of collaborative work">
+          Understands the value of collaborative work
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="networks[]" data-level="Foundational" value="Builds and fosters working relationships with colleagues">
+          Builds and fosters working relationships with colleagues
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="networks[]" data-level="Foundational" value="Promotes ownself as collaborative and accessible">
+          Promotes ownself as collaborative and accessible
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="networks[]" data-level="Intermediate" value="Contributes to multi- or cross-disciplinary collaborative teams">
+          Contributes to multi- or cross-disciplinary collaborative teams
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="networks[]" data-level="Intermediate" value="Develops collaborative networks and actively includes colleagues">
+          Develops collaborative networks and actively includes colleagues
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="networks[]" data-level="Intermediate" value="Makes use of face‐to‐face and online networking environments for promotion of own profile and research">
+          Makes use of face‐to‐face and online networking environments for promotion of own profile and research
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="networks[]" data-level="Advanced" value="Engages with stakeholders external of own institutions">
+          Engages with stakeholders external of own institutions
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="networks[]" data-level="Advanced" value="Establishes strategic collaborations and partnerships to develop own research area">
+          Establishes strategic collaborations and partnerships to develop own research area
+        </label>
+        <!-- Expert -->
+        <label class="advanced">
+          <input type="checkbox" name="networks[]" data-level="Advanced" value="Encourages own institution to foster collaborative networks">
+          Encourages own institution to foster collaborative networks
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="networks[]" data-level="Expert" value="Builds and leads collaboration partnerships within and outside own institution">
+          Builds and leads collaboration partnerships within and outside own institution
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="networks[]" data-level="Expert" value="Is an influential leader of large international consortia with academic and non-academic partners">
+          Is an influential leader of large international consortia with academic and non-academic partners
+        </label>
+      </fieldset>
+
+      <!-- 3. Work in teams -->
+      <fieldset data-topic="3. Work in teams">
+        <legend>3. Work in teams</legend>
+        <div class="description">
+          Work confidently within a group with each doing their part in the service of the whole
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="teams[]" data-level="Foundational" value="Works within teams under supervision to produce research outputs">
+          Works within teams under supervision to produce research outputs
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="teams[]" data-level="Foundational" value="Appreciates the impact of own behaviour on teamwork">
+          Appreciates the impact of own behaviour on teamwork
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="teams[]" data-level="Intermediate" value="Recognises the importance of team leadership behaviours">
+          Recognises the importance of team leadership behaviours
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="teams[]" data-level="Intermediate" value="Understands own priorities and those of own coworkers, creates a cooperative work environment, and thus optimizes the output of teamwork">
+          Understands own priorities and those of own coworkers, creates a cooperative work environment, and thus optimizes the output of teamwork
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="teams[]" data-level="Advanced" value="Understands team dynamics and manages conflict and appraisal of team members">
+          Understands team dynamics and manages conflict and appraisal of team members
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="teams[]" data-level="Advanced" value="Leverages the strengths of different team members to achieve outstanding results">
+          Leverages the strengths of different team members to achieve outstanding results
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="teams[]" data-level="Advanced" value="Modulates own leadership for the best interest of the team">
+          Modulates own leadership for the best interest of the team
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="teams[]" data-level="Expert" value="Enhances the transformative capacity of the organisation by recruiting, training and building teams">
+          Enhances the transformative capacity of the organisation by recruiting, training and building teams
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="teams[]" data-level="Expert" value="Is known for building and leading successful teams">
+          Is known for building and leading successful teams
+        </label>
+      </fieldset>
+
+      <!-- 4. Ensure wellbeing at work -->
+      <fieldset data-topic="4. Ensure wellbeing at work">
+        <legend>4. Ensure wellbeing at work</legend>
+        <div class="description">
+          Understand the links between work, physical and mental health and wellbeing; be informed about health promotion and disease prevention to create a healthy work environment
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="wellbeing[]" data-level="Foundational" value="Understands the link between work, physical and mental health and wellbeing">
+          Understands the link between work, physical and mental health and wellbeing
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="wellbeing[]" data-level="Foundational" value="Uses support and advisory resources to avoid stress and pressure">
+          Uses support and advisory resources to avoid stress and pressure
+        </label>
+        <!-- Intermediate -->
+        <label class="foundational">
+          <input type="checkbox" name="wellbeing[]" data-level="Foundational" value="Considers the needs of others">
+          Considers the needs of others
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="wellbeing[]" data-level="Intermediate" value="Maintains a leveled work-life balance">
+          Maintains a leveled work-life balance
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="wellbeing[]" data-level="Intermediate" value="Is well informed about health promotion and takes responsibility for own work situation">
+          Is well informed about health promotion and takes responsibility for own work situation
+        </label>
+        <!-- Advanced -->
+        <label class="intermediate">
+          <input type="checkbox" name="wellbeing[]" data-level="Intermediate" value="Assists colleagues in managing stress and contributes to a healthy work environment">
+          Assists colleagues in managing stress and contributes to a healthy work environment
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="wellbeing[]" data-level="Advanced" value="Actively pursues and promotes work-life balance and tracks well-being issues for self and team">
+          Actively pursues and promotes work-life balance and tracks well-being issues for self and team
+        </label>
+        <!-- Expert -->
+        <label class="advanced">
+          <input type="checkbox" name="wellbeing[]" data-level="Advanced" value="Educates and consults others on managing stress">
+          Educates and consults others on managing stress
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="wellbeing[]" data-level="Expert" value="Designs and implements policies on work-life balance and wellbeing in organisation">
+          Designs and implements policies on work-life balance and wellbeing in organisation
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="wellbeing[]" data-level="Expert" value="Influences policies on work-life balance and wellbeing at national and international level">
+          Influences policies on work-life balance and wellbeing at national and international level
+        </label>
+      </fieldset>
+
+      <!-- 5. Build mentor-mentee relationships -->
+      <fieldset data-topic="5. Build mentor-mentee relationships">
+        <legend>5. Build mentor-mentee relationships</legend>
+        <div class="description">
+          Mentor individuals by providing emotional support, sharing experiences and giving advice to aid personal development; as a mentee, seek guidance and support
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="mentor[]" data-level="Foundational" value="Supports others through teaching and advisory activities">
+          Supports others through teaching and advisory activities
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="mentor[]" data-level="Foundational" value="Acknowledges the importance of receiving mentoring and actively seeks support">
+          Acknowledges the importance of receiving mentoring and actively seeks support
+        </label>
+        <!-- Intermediate -->
+        <label class="intermediate">
+          <input type="checkbox" name="mentor[]" data-level="Intermediate" value="Encourages less experienced colleagues to seek guidance and advice">
+          Encourages less experienced colleagues to seek guidance and advice
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="mentor[]" data-level="Intermediate" value="Acts as a mentor to less experienced colleagues">
+          Acts as a mentor to less experienced colleagues
+        </label>
+        <!-- Advanced -->
+        <label class="advanced">
+          <input type="checkbox" name="mentor[]" data-level="Advanced" value="Develops confidence and manages over-confidence in mentees">
+          Develops confidence and manages over-confidence in mentees
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="mentor[]" data-level="Advanced" value="Engages with existing national and international mentorship programmes">
+          Engages with existing national and international mentorship programmes
+        </label>
+        <!-- Expert -->
+        <label class="expert">
+          <input type="checkbox" name="mentor[]" data-level="Expert" value="Influences policies on mentor-mentee relationships">
+          Influences policies on mentor-mentee relationships
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="mentor[]" data-level="Expert" value="Nurtures talents, identifies hidden potential and contributes to developing outstanding, resilient researchers">
+          Nurtures talents, identifies hidden potential and contributes to developing outstanding, resilient researchers
+        </label>
+      </fieldset>
+
+      <!-- 6. Promote inclusion & diversity -->
+      <fieldset data-topic="6. Promote inclusion & diversity">
+        <legend>6. Promote inclusion & diversity</legend>
+        <div class="description">
+          Promote and ensure equality and diversity management in both words and actions; guide and advise colleagues on working in diverse teams and contexts
+        </div>
+        <!-- Foundational -->
+        <label class="foundational">
+          <input type="checkbox" name="diversity[]" data-level="Foundational" value="Appreciates the importance of diversity and its benefits for complex research projects">
+          Appreciates the importance of diversity and its benefits for complex research projects
+        </label>
+        <label class="foundational">
+          <input type="checkbox" name="diversity[]" data-level="Foundational" value="Is open-minded about diverging perspectives and is respectful to individual differences">
+          Is open-minded about diverging perspectives and is respectful to individual differences
+        </label>
+        <!-- Intermediate -->
+        <label class="foundational">
+          <input type="checkbox" name="diversity[]" data-level="Foundational" value="Understands diversity and equality requirements of institutions">
+          Understands diversity and equality requirements of institutions
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="diversity[]" data-level="Intermediate" value="Actively works with diversity projects">
+          Actively works with diversity projects
+        </label>
+        <!-- Advanced -->
+        <label class="intermediate">
+          <input type="checkbox" name="diversity[]" data-level="Intermediate" value="Keeps up to date on research findings on the benefits and challenges of working with diversity">
+          Keeps up to date on research findings on the benefits and challenges of working with diversity
+        </label>
+        <label class="intermediate">
+          <input type="checkbox" name="diversity[]" data-level="Intermediate" value="Works exclusively in teams and collaborations that respect inclusiveness and diversity">
+          Works exclusively in teams and collaborations that respect inclusiveness and diversity
+        </label>
+        <!-- Expert -->
+        <label class="advanced">
+          <input type="checkbox" name="diversity[]" data-level="Advanced" value="Advises and mentors less experienced colleagues about working with diversity">
+          Advises and mentors less experienced colleagues about working with diversity
+        </label>
+        <label class="advanced">
+          <input type="checkbox" name="diversity[]" data-level="Advanced" value="Actively promotes equality and diversity standards at the institution">
+          Actively promotes equality and diversity standards at the institution
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="diversity[]" data-level="Expert" value="Influences policy on diversity and equality standards">
+          Influences policy on diversity and equality standards
+        </label>
+        <label class="expert">
+          <input type="checkbox" name="diversity[]" data-level="Expert" value="Is known for managing diversity and equality in an exemplary way in projects and institutions">
+          Is known for managing diversity and equality in an exemplary way in projects and institutions
+        </label>
+      </fieldset>
+    </form>
+  </div>
+
+
+
+  <!-- Tools Tab (MANAGING RESEARCH TOOLS) as Tools -->
+<div id="tools" class="tab-content">
+  <h2>Managing Research Tools</h2>
+  <form id="toolsForm">
+    <!-- 1. Manage research data -->
+    <fieldset data-topic="1. Manage research data">
+      <legend>1. Manage research data</legend>
+      <div class="description">
+        Produce and analyse research data originating from qualitative and quantitative research methods. Store and maintain the data in research databases. Support the re-use of research data and be familiar with data management principles, including FAIR (Findable, Accessible, Interoperable, and Reusable) principles. Make data as open as possible, and as closed as necessary.
+      </div>
+      <!-- Foundational (items 1–2) -->
+      <label class="foundational">
+        <input type="checkbox" name="data[]" data-level="Foundational" value="Identifies sources of information and assesses if data is trustworthy, valid, reliable and pertinent">
+        Identifies sources of information and assesses if data is trustworthy, valid, reliable and pertinent
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="data[]" data-level="Foundational" value="Knows how to store and organise data in an accessible way digitally">
+        Knows how to store and organise data in an accessible way digitally
+      </label>
+      <!-- Intermediate (items 3–5) -->
+      <label class="foundational">
+        <input type="checkbox" name="data[]" data-level="Foundational" value="Uses, transforms and analyses non-sensitive research data transparently and in accordance with legal and privacy requirements">
+        Uses, transforms and analyses non-sensitive research data transparently and in accordance with legal and privacy requirements
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="data[]" data-level="Intermediate" value="Organises data sets to be findable, accessible, interoperable and reusable (FAIR) and to be easily stored and retrieved in a structured environment">
+        Organises data sets to be findable, accessible, interoperable and reusable (FAIR) and to be easily stored and retrieved in a structured environment
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="data[]" data-level="Intermediate" value="Trains and empowers other team members to work with data in a structured, transparent and accessible way">
+        Trains and empowers other team members to work with data in a structured, transparent and accessible way
+      </label>
+      <!-- Advanced (items 6–8) -->
+      <label class="advanced">
+        <input type="checkbox" name="data[]" data-level="Advanced" value="Applies data analysis tools, understands legal and ethical issues linked to data and integrates data management plans">
+        Applies data analysis tools, understands legal and ethical issues linked to data and integrates data management plans
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="data[]" data-level="Advanced" value="Transforms, organises and analyses data in a research context and applies metrics to evaluate the success of data initiatives">
+        Transforms, organises and analyses data in a research context and applies metrics to evaluate the success of data initiatives
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="data[]" data-level="Advanced" value="Promotes FAIR principles within own academic community">
+        Promotes FAIR principles within own academic community
+      </label>
+      <!-- Expert (items 9–11) -->
+      <label class="expert">
+        <input type="checkbox" name="data[]" data-level="Expert" value="Creates relevant data sets from different sources and develops effective methods making data more comprehensible for research">
+        Creates relevant data sets from different sources and develops effective methods making data more comprehensible for research
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="data[]" data-level="Expert" value="Proposes new processes and practices in managing data, information and digital content in a structured digital environment">
+        Proposes new processes and practices in managing data, information and digital content in a structured digital environment
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="data[]" data-level="Expert" value="Is known as an influential advocate of FAIR principles">
+        Is known as an influential advocate of FAIR principles
+      </label>
+    </fieldset>
+    
+    <!-- 2. Promote citizen science -->
+    <fieldset data-topic="2. Promote citizen science">
+      <legend>2. Promote citizen science</legend>
+      <div class="description">
+        Engage citizens in research activities and develop protocols for their inclusion at various stages of the research process
+      </div>
+      <!-- Foundational (items 1–2) -->
+      <label class="foundational">
+        <input type="checkbox" name="citizen[]" data-level="Foundational" value="Understands that citizens are knowledge-holders with the ability to contribute to the research process">
+        Understands that citizens are knowledge-holders with the ability to contribute to the research process
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="citizen[]" data-level="Foundational" value="Knows the pros and cons of engaging or not engaging with citizens in research endeavours">
+        Knows the pros and cons of engaging or not engaging with citizens in research endeavours
+      </label>
+      <!-- Intermediate (items 3–4) -->
+      <label class="intermediate">
+        <input type="checkbox" name="citizen[]" data-level="Intermediate" value="Is inclusive and transparent in the research process and understands how best to engage with citizens in each context">
+        Is inclusive and transparent in the research process and understands how best to engage with citizens in each context
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="citizen[]" data-level="Advanced" value="Engages all categories of citizens in the research process and integrates them at specific stages">
+        Engages all categories of citizens in the research process and integrates them at specific stages
+      </label>
+      <!-- Advanced (item 5) -->
+      <label class="expert">
+        <input type="checkbox" name="citizen[]" data-level="Expert" value="Is recognised for engaging with citizens in an inclusive, transparent and effective manner">
+        Is recognised for engaging with citizens in an inclusive, transparent and effective manner
+      </label>
+      <!-- Expert (item 6) -->
+      <label class="expert">
+        <input type="checkbox" name="citizen[]" data-level="Expert" value="Develops novel, reliable and trustworthy protocols in own research area to include citizens">
+        Develops novel, reliable and trustworthy protocols in own research area to include citizens
+      </label>
+    </fieldset>
+    
+    <!-- 3. Manage intellectual property rights -->
+    <fieldset data-topic="3. Manage intellectual property rights">
+      <legend>3. Manage intellectual property rights</legend>
+      <div class="description">
+        Deal with legal rights that protect research outputs; advise peers and establish institutional procedures for intellectual property protection
+      </div>
+      <!-- Foundational (items 1–2) -->
+      <label class="foundational">
+        <input type="checkbox" name="ip[]" data-level="Foundational" value="Understands basic concepts of data ownership rules as they apply to own research">
+        Understands basic concepts of data ownership rules as they apply to own research
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="ip[]" data-level="Foundational" value="Knows what copyright, IPR and licensing are and seeks advice from experienced researchers">
+        Knows what copyright, IPR and licensing are and seeks advice from experienced researchers
+      </label>
+      <!-- Intermediate (items 3–4) -->
+      <label class="intermediate">
+        <input type="checkbox" name="ip[]" data-level="Intermediate" value="Is familiar with the protection of research outputs, open and wider access and the different licenses related to own research">
+        Is familiar with the protection of research outputs, open and wider access and the different licenses related to own research
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="ip[]" data-level="Intermediate" value="Advises peers and less experienced researchers and acts as a reference on intellectual property">
+        Advises peers and less experienced researchers and acts as a reference on intellectual property
+      </label>
+      <!-- Advanced (items 5–6) -->
+      <label class="advanced">
+        <input type="checkbox" name="ip[]" data-level="Advanced" value="Values the relevance of open and closed access of research outputs for researchers and society">
+        Values the relevance of open and closed access of research outputs for researchers and society
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="ip[]" data-level="Advanced" value="Engages with technology transfer offices to facilitate the commercialisation of intellectual property">
+        Engages with technology transfer offices to facilitate the commercialisation of intellectual property
+      </label>
+      <!-- Expert (items 7–8) -->
+      <label class="expert">
+        <input type="checkbox" name="ip[]" data-level="Expert" value="Leads the development of new procedures for IP protection within the higher education sector and professional associations">
+        Leads the development of new procedures for IP protection within the higher education sector and professional associations
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="ip[]" data-level="Expert" value="Successfully protects and commercialises own research outputs">
+        Successfully protects and commercialises own research outputs
+      </label>
+    </fieldset>
+    
+    <!-- 4. Operate open source software -->
+    <fieldset data-topic="4. Operate open source software">
+      <legend>4. Operate open source software</legend>
+      <div class="description">
+        Use open source software beyond licensed tools; understand open source models, licensing schemes and coding practices; promote and contribute to open source development in research
+      </div>
+      <!-- Foundational (items 1–2) -->
+      <label class="foundational">
+        <input type="checkbox" name="opensource[]" data-level="Foundational" value="Understands the value of open-source software">
+        Understands the value of open-source software
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="opensource[]" data-level="Foundational" value="Is aware of the pros and cons of operating open-source software">
+        Is aware of the pros and cons of operating open-source software
+      </label>
+      <!-- Intermediate (items 3–5) -->
+      <label class="foundational">
+        <input type="checkbox" name="opensource[]" data-level="Foundational" value="Writes open-source code under supervision">
+        Writes open-source code under supervision
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="opensource[]" data-level="Intermediate" value="Understands and makes use of relevant open-source licenses">
+        Understands and makes use of relevant open-source licenses
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="opensource[]" data-level="Intermediate" value="Knows and uses the most relevant open-source repositories in own research area">
+        Knows and uses the most relevant open-source repositories in own research area
+      </label>
+      <!-- Advanced (items 6–8) -->
+      <label class="intermediate">
+        <input type="checkbox" name="opensource[]" data-level="Intermediate" value="Writes open-source code using common coding practices">
+        Writes open-source code using common coding practices
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="opensource[]" data-level="Advanced" value="Trains students and staff in developing open-source software">
+        Trains students and staff in developing open-source software
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="opensource[]" data-level="Advanced" value="Promotes the use of open-source software in own academic community">
+        Promotes the use of open-source software in own academic community
+      </label>
+      <!-- Expert (items 9–11) -->
+      <label class="advanced">
+        <input type="checkbox" name="opensource[]" data-level="Advanced" value="Participates as a developer in open-source projects">
+        Participates as a developer in open-source projects
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="opensource[]" data-level="Expert" value="Shapes national and international open-source policies">
+        Shapes national and international open-source policies
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="opensource[]" data-level="Expert" value="Leads open-source projects of large scope">
+        Leads open-source projects of large scope
+      </label>
+    </fieldset>
+  </form>
+</div>
+
+
+  <!-- Research Tab (DOING RESEARCH) as Research -->
+  <div id="research" class="tab-content">
+  <h2>Doing Research</h2>
+  <form id="researchForm">
+    <!-- 1. Have disciplinary expertise -->
+    <fieldset data-topic="1. Have disciplinary expertise">
+      <legend>1. Have disciplinary expertise</legend>
+      <div class="description">
+        Demonstrate deep knowledge and complex understanding of a specific research area, including responsible research, research ethics and integrity principles, privacy and GDPR requirements, related to research activities within a specific discipline.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="expertise[]" data-level="Foundational" value="Understands key concepts and relevant knowledge of own research area">
+        Understands key concepts and relevant knowledge of own research area
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="expertise[]" data-level="Foundational" value="Keeps track of the latest advances within related fields">
+        Keeps track of the latest advances within related fields
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="expertise[]" data-level="Foundational" value="Is familiar with RRI (Responsible Research and Innovation) and ethical requisites to develop research in own discipline">
+        Is familiar with RRI (Responsible Research and Innovation) and ethical requisites to develop research in own discipline
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="expertise[]" data-level="Foundational" value="Needs guidance to implement GDPR and privacy requirements">
+        Needs guidance to implement GDPR and privacy requirements
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="expertise[]" data-level="Intermediate" value="Makes original contributions to own research area">
+        Makes original contributions to own research area
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="expertise[]" data-level="Intermediate" value="Supports awareness of societal, political, ethical, and integrity related aspects of knowledge creation in own research area">
+        Supports awareness of societal, political, ethical, and integrity related aspects of knowledge creation in own research area
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="expertise[]" data-level="Intermediate" value="Includes GDPR and privacy requirements in own research activity">
+        Includes GDPR and privacy requirements in own research activity
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="expertise[]" data-level="Advanced" value="Brings new knowledge to own and related disciplines and is aware of its impact on society">
+        Brings new knowledge to own and related disciplines and is aware of its impact on society
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="expertise[]" data-level="Advanced" value="Influences national and international policies related to ethics and integrity in own research area">
+        Influences national and international policies related to ethics and integrity in own research area
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="expertise[]" data-level="Expert" value="Contributes with, and has a deep understanding of, novel developments in own and related research areas, pursuing whenever appropriate an interdisciplinary approach">
+        Contributes with, and has a deep understanding of, novel developments in own and related research areas, pursuing whenever appropriate an interdisciplinary approach
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="expertise[]" data-level="Expert" value="Influences national and international policies related to ethics and integrity in research">
+        Influences national and international policies related to ethics and integrity in research
+      </label>
+    </fieldset>
+
+    <!-- 2. Perform scientific research -->
+    <fieldset data-topic="2. Perform scientific research">
+      <legend>2. Perform scientific research</legend>
+      <div class="description">
+        Gain, correct or improve knowledge about phenomena by selecting or developing the appropriate scientific approach and by using scientific methods and research techniques based on empirical or measurable observations.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="researching[]" data-level="Foundational" value="Produces and accesses reliable research data">
+        Produces and accesses reliable research data
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="researching[]" data-level="Foundational" value="Learns from senior researchers in own institutions and takes part in collaborative research projects">
+        Learns from senior researchers in own institutions and takes part in collaborative research projects
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="researching[]" data-level="Intermediate" value="Knows how to create, organise, validate, share, store, and curate information and is aware of the risks therein">
+        Knows how to create, organise, validate, share, store, and curate information and is aware of the risks therein
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="researching[]" data-level="Intermediate" value="Manages an independent research group">
+        Manages an independent research group
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="researching[]" data-level="Intermediate" value="Engages in research collaborations outside of own institution">
+        Engages in research collaborations outside of own institution
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="researching[]" data-level="Advanced" value="Introduces the use of new research tools and methods in own area">
+        Introduces the use of new research tools and methods in own area
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="researching[]" data-level="Advanced" value="Coordinates research collaboration networks">
+        Coordinates research collaboration networks
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="researching[]" data-level="Advanced" value="Advises less experienced colleagues on research approaches in own discipline">
+        Advises less experienced colleagues on research approaches in own discipline
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="researching[]" data-level="Expert" value="Sets the research agenda in own research area">
+        Sets the research agenda in own research area
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="researching[]" data-level="Expert" value="Leads a large research organisation">
+        Leads a large research organisation
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="researching[]" data-level="Expert" value="Designs guidelines and educational material for performing research">
+        Designs guidelines and educational material for performing research
+      </label>
+    </fieldset>
+
+    <!-- 3. Conduct interdisciplinary research -->
+    <fieldset data-topic="3. Conduct interdisciplinary research">
+      <legend>3. Conduct interdisciplinary research</legend>
+      <div class="description">
+        Work and use research findings and data across disciplinary/functional boundaries, including in collaborative settings.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Foundational" value="Values the benefits of knowledge from disciplines and domains different from own">
+        Values the benefits of knowledge from disciplines and domains different from own
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Foundational" value="Engages with and learns from researchers from other disciplines">
+        Engages with and learns from researchers from other disciplines
+      </label>
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Intermediate" value="Fosters creativity and critical thinking in inter-disciplinary meetings">
+        Fosters creativity and critical thinking in inter-disciplinary meetings
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Intermediate" value="Leads an inter-disciplinary research group and/or collaborates with colleagues from other disciplines at national and international institutions">
+        Leads an inter-disciplinary research group and/or collaborates with colleagues from other disciplines at national and international institutions
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Advanced" value="Develops new approaches to perform research across disciplines">
+        Develops new approaches to perform research across disciplines
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Advanced" value="Leads inter-disciplinary research collaboration networks">
+        Leads inter-disciplinary research collaboration networks
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Expert" value="Develops a visionary approach and challenges traditional viewpoints">
+        Develops a visionary approach and challenges traditional viewpoints
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="interdisciplinary[]" data-level="Expert" value="Sets the policy agenda to develop research across disciplinary and functional boundaries">
+        Sets the policy agenda to develop research across disciplinary and functional boundaries
+      </label>
+    </fieldset>
+
+    <!-- 4. Write research documents -->
+    <fieldset data-topic="4. Write research documents">
+      <legend>4. Write research documents</legend>
+      <div class="description">
+        Draft and edit research, academic or technical texts on different subjects.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="writing[]" data-level="Foundational" value="Contributes, under supervision, content for research, academic, and technical texts in a style appropriate for readership in own research area">
+        Contributes, under supervision, content for research, academic, and technical texts in a style appropriate for readership in own research area
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="writing[]" data-level="Foundational" value="Becomes confident with scholarly publishing tools">
+        Becomes confident with scholarly publishing tools
+      </label>
+      <!-- Integrative -->
+      <label class="integrative">
+        <input type="checkbox" name="writing[]" data-level="Integrative" value="Communicates in a written style appropriate for specialist and non-specialist audiences">
+        Communicates in a written style appropriate for specialist and non-specialist audiences
+      </label>
+      <label class="integrative">
+        <input type="checkbox" name="writing[]" data-level="Integrative" value="Supervises and mentors less experienced researchers in academic literacy and writing skills">
+        Supervises and mentors less experienced researchers in academic literacy and writing skills
+      </label>
+      <label class="integrative">
+        <input type="checkbox" name="writing[]" data-level="Integrative" value="Reviews and edits academic and technical texts">
+        Reviews and edits academic and technical texts
+      </label>
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="writing[]" data-level="Advanced" value="Develops advanced academic writing competences and leads the production of research literature, presenting complex ideas in a clear way">
+        Develops advanced academic writing competences and leads the production of research literature, presenting complex ideas in a clear way
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="writing[]" data-level="Advanced" value="Masters the use of scholarly publishing tools and has a deep understanding of the publication processes">
+        Masters the use of scholarly publishing tools and has a deep understanding of the publication processes
+      </label>
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="writing[]" data-level="Expert" value="Writes academic and technical texts also in research areas contiguous to own discipline">
+        Writes academic and technical texts also in research areas contiguous to own discipline
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="writing[]" data-level="Expert" value="Innovates scholarly publishing by introducing new tools or business models in the industry">
+        Innovates scholarly publishing by introducing new tools or business models in the industry
+      </label>
+    </fieldset>
+
+    <!-- 5. Apply research ethics and integrity principles -->
+    <fieldset data-topic="5. Apply research ethics and integrity principles">
+      <legend>5. Apply research ethics and integrity principles</legend>
+      <div class="description">
+        Apply fundamental ethical principles and legislation to research and innovation, including issues of research integrity. Perform, review, or report research avoiding misconducts such as fabrication, falsification, and plagiarism.
+      </div>
+      <!-- Foundational -->
+      <label class="foundational">
+        <input type="checkbox" name="ethics[]" data-level="Foundational" value="Has a basic understanding of ethical conduct of research and of integrity principles">
+        Has a basic understanding of ethical conduct of research and of integrity principles
+      </label>
+      <label class="foundational">
+        <input type="checkbox" name="ethics[]" data-level="Foundational" value="Asks for expert advice when in doubt about ethical decisions">
+        Asks for expert advice when in doubt about ethical decisions
+      </label>
+
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="ethics[]" data-level="Intermediate" value="Is well versed in the ethical conduct of research">
+        Is well versed in the ethical conduct of research
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="ethics[]" data-level="Intermediate" value="Provides advices about ethical issues of research to peers">
+        Provides advices about ethical issues of research to peers
+      </label>
+      <label class="intermediate">
+        <input type="checkbox" name="ethics[]" data-level="Intermediate" value="Is alert and attentive to falsification and plagiarism">
+        Is alert and attentive to falsification and plagiarism
+      </label>
+
+      <!-- Advanced -->
+      <label class="advanced">
+        <input type="checkbox" name="ethics[]" data-level="Advanced" value="Engages actively in the works of various ethical committees">
+        Engages actively in the works of various ethical committees
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="ethics[]" data-level="Advanced" value="Promotes public understanding of the ethical issues raised by research">
+        Promotes public understanding of the ethical issues raised by research
+      </label>
+      <label class="advanced">
+        <input type="checkbox" name="ethics[]" data-level="Advanced" value="Helps less experienced researchers in the ethical conduct of research">
+        Helps less experienced researchers in the ethical conduct of research
+      </label>
+
+      <!-- Expert -->
+      <label class="expert">
+        <input type="checkbox" name="ethics[]" data-level="Expert" value="Actively contributes to develop ethical guidelines and systems to ensure ethical conduct of research in academia">
+        Actively contributes to develop ethical guidelines and systems to ensure ethical conduct of research in academia
+      </label>
+      <label class="expert">
+        <input type="checkbox" name="ethics[]" data-level="Expert" value="Advises policy makers on policies and procedures of own research/academic/professional sector">
+        Advises policy makers on policies and procedures of own research/academic/professional sector
+      </label>
+    </fieldset>
+  </form>
+</div>
+
+
+
+  <!-- Report Tab: When selected, the summary is generated automatically -->
+  <div id="report" class="tab-content">
+    <div id="title">
+    <h2>Summary of self-evaluation with ResearchComp</h2>
+    <button id="copySummaryBtn">📋 COPY THE SUMMARY</button> <button id="sendEmailBtn">✉️ EMAIL THE SUMMARY</button> <button id="downloadHtmlBtn">💾 SAVE FILE WITH ANSWERS</button>
+    </div>
+    <div id="summary"></div>
+  </div>
+
+<script>
+/* ========================
+   TAB SWITCHING + SUMMARY
+   ======================== */
+const menuLinks = document.querySelectorAll("nav ul li a");
+
+menuLinks.forEach(link => {
+  link.addEventListener("click", function(e) {
+    e.preventDefault();
+    // Remove active class from all menu links
+    menuLinks.forEach(item => item.classList.remove("active"));
+    // Hide all tab contents
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+
+    // Activate clicked link and corresponding tab
+    this.classList.add("active");
+    const target = this.getAttribute("data-target");
+    document.getElementById(target).classList.add("active");
+
+    // If Report tab is selected, generate summary automatically
+    if (target === "report") {
+      generateSummary();
+    }
+  });
+});
+
+// Generate summary function
+function generateSummary() {
+  const allTabContents = document.querySelectorAll(".tab-content");
+  let finalSummary = "";
+
+  // Go through each tab (skip #report)
+  allTabContents.forEach(tab => {
+    if (tab.id === "report") return;
+
+    const topicHeading = tab.querySelector("h2");
+    if (!topicHeading) return; // safety check
+
+    const topicName = topicHeading.textContent.trim();
+    const fieldsets = tab.querySelectorAll("fieldset");
+    let topicHasSelectedItems = false;
+    let topicSummary = "";
+
+    // Each fieldset is a subtopic
+    fieldsets.forEach(fieldset => {
+      const subtopicName = fieldset.getAttribute("data-topic") || "Untitled Subtopic";
+      const checkboxes = fieldset.querySelectorAll("input[type='checkbox']:checked");
+      const grouped = {
+        "Foundational": [],
+        "Intermediate": [],
+        "Advanced": [],
+        "Expert": []
+      };
+
+      // Collect checked items by level
+      checkboxes.forEach(box => {
+        const level = box.getAttribute("data-level");
+        grouped[level].push(box.value);
+      });
+
+      // Build subtopic summary if any checked
+      let subtopicSummaryParts = [];
+      ["Foundational", "Intermediate", "Advanced", "Expert"].forEach(level => {
+        if (grouped[level].length > 0) {
+          subtopicSummaryParts.push(
+            `<strong>${level}:</strong> ${grouped[level].join(", ")}`
+          );
+        }
+      });
+
+      if (subtopicSummaryParts.length > 0) {
+        topicHasSelectedItems = true;
+        topicSummary += `
+          <p>
+            <strong>${subtopicName}</strong><br>
+            ${subtopicSummaryParts.join("<br>")}
+          </p>`;
+      }
+    });
+
+    // If this topic had selected items, add a heading + subtopic summaries
+    if (topicHasSelectedItems) {
+      finalSummary += `<h3>${topicName}</h3>${topicSummary}`;
+    }
+  });
+
+  if (!finalSummary) {
+    finalSummary = "<p>No options selected.</p>";
+  }
+  document.getElementById("summary").innerHTML = finalSummary;
+}
+
+/* ========================
+   COPY SUMMARY TO CLIPBOARD
+   ======================== */
+const copyBtn = document.getElementById("copySummaryBtn");
+if (copyBtn) {
+  copyBtn.addEventListener("click", function() {
+    const summaryElement = document.getElementById("summary");
+    if (!summaryElement) return;
+
+    // If the modern clipboard API is available
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(summaryElement.innerText);
+    } else {
+      // Fallback for older browsers
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(summaryElement);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        // Optional: handle any errors if needed
+      }
+      selection.removeAllRanges();
+    }
+  });
+}
+
+/* ========================
+   SEND SUMMARY TO EMAIL
+   ======================== */
+document.getElementById("sendEmailBtn").addEventListener("click", function() {
+  const summaryElement = document.getElementById("summary");
+  if (!summaryElement) return;
+
+  const subject = encodeURIComponent("Summary of Self-Evaluation");
+  // Replace .innerText with .innerHTML or any text you want
+  const body = encodeURIComponent(summaryElement.innerText);
+
+  // Build mailto link
+  const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+
+  // Open mailto link to launch default mail client
+  window.location.href = mailtoLink;
+});
+
+/* ========================
+   SAVE FILE WITH ANSWERS
+   ======================== */
+document.getElementById("downloadHtmlBtn").addEventListener("click", function() {
+  // Clone the entire <html> element
+  const docClone = document.documentElement.cloneNode(true);
+
+  // In the cloned DOM, update all checkboxes to match the user’s current selections
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const cloneCheckboxes = docClone.querySelectorAll('input[type="checkbox"]');
+
+  // Match each real checkbox to its clone, set 'checked' attribute accordingly
+  checkboxes.forEach((original, index) => {
+    const cloned = cloneCheckboxes[index];
+    if (original.checked) {
+      cloned.setAttribute('checked', '');   // Ensures <input ... checked> in the final HTML
+    } else {
+      cloned.removeAttribute('checked');
+    }
+  });
+
+  // Convert the cloned DOM to a string (including <!DOCTYPE html>)
+  const docString = "<!DOCTYPE html>\n" + docClone.outerHTML;
+
+  // Create a blob and trigger download
+  const blob = new Blob([docString], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "research_competences.html"; // Name of the downloaded file
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+
+/* ========================
+   SAVE ANSWERS LOCALLY
+   ======================== */
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+  // On change, store state in localStorage
+  checkbox.addEventListener('change', () => {
+    saveSelections();
+  });
+});
+
+// Save all currently checked boxes to local storage
+function saveSelections() {
+  const checked = [];
+  document.querySelectorAll('input[type="checkbox"]:checked').forEach(box => {
+    checked.push(box.name + '::' + box.value);
+  });
+  localStorage.setItem('savedResearchComp', JSON.stringify(checked));
+}
+
+// On load, restore states if they exist
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('savedResearchComp');
+  if (saved) {
+    const savedArr = JSON.parse(saved);
+    savedArr.forEach(item => {
+      const [name, value] = item.split('::');
+      const box = document.querySelector(`input[type="checkbox"][name="${name}"][value="${value}"]`);
+      if (box) box.checked = true;
+    });
+  }
+});
+</script>
+
+</body>
+</html>
