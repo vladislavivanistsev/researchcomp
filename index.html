@@ -2176,17 +2176,17 @@
         <input type="checkbox" name="writing[]" data-level="Foundational" value="Becomes confident with scholarly publishing tools">
         Becomes confident with scholarly publishing tools
       </label>
-      <!-- Integrative -->
-      <label class="integrative">
-        <input type="checkbox" name="writing[]" data-level="Integrative" value="Communicates in a written style appropriate for specialist and non-specialist audiences">
+      <!-- Intermediate -->
+      <label class="intermediate">
+        <input type="checkbox" name="writing[]" data-level="Intermediate" value="Communicates in a written style appropriate for specialist and non-specialist audiences">
         Communicates in a written style appropriate for specialist and non-specialist audiences
       </label>
-      <label class="integrative">
-        <input type="checkbox" name="writing[]" data-level="Integrative" value="Supervises and mentors less experienced researchers in academic literacy and writing skills">
+      <label class="intermediate">
+        <input type="checkbox" name="writing[]" data-level="Intermediate" value="Supervises and mentors less experienced researchers in academic literacy and writing skills">
         Supervises and mentors less experienced researchers in academic literacy and writing skills
       </label>
-      <label class="integrative">
-        <input type="checkbox" name="writing[]" data-level="Integrative" value="Reviews and edits academic and technical texts">
+      <label class="intermediate">
+        <input type="checkbox" name="writing[]" data-level="Intermediate" value="Reviews and edits academic and technical texts">
         Reviews and edits academic and technical texts
       </label>
       <!-- Advanced -->
@@ -2387,6 +2387,10 @@ function generateSummary() {
       // Collect checked items by level
       checkboxes.forEach(box => {
         const level = box.getAttribute("data-level");
+        if (!grouped[level]) {
+          console.warn(`Unknown level: ${level}`, box);
+          return;
+        }
         grouped[level].push(box.value);
       });
 
