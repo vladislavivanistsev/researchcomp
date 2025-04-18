@@ -2399,7 +2399,7 @@ function generateSummary() {
       ["Foundational", "Intermediate", "Advanced", "Expert"].forEach(level => {
         if (grouped[level].length > 0) {
           subtopicSummaryParts.push(
-            `<strong>${level}:</strong> ${grouped[level].join(", ")}`
+            `<strong>${level}:</strong> ${grouped[level].join("; ")}`
           );
         }
       });
