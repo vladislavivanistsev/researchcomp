@@ -2315,6 +2315,21 @@
         This interactive tool is provided as-is, without any official endorsement by or affiliation with the European Commission.
         Consider liking the code on github and subscribing to <a href="https://www.youtube.com/@doublelayer" target="_blank">youtube@doublelayer</a>.
       </p>
+      <h3>Tips on analysing the summary</h3>
+      <p>Adapt the following promt to analyse your summary with AI:</p>
+      <code>For every sub‑category in the given {text, pdf}, assign a level exactly as specified under “Level‑assignment rules”. 
+        For each main category, convert levels to numbers (Foundational = 1, Intermediate = 2, Advanced = 3, Expert = 4), average the numbers of its sub‑categories, round to the nearest whole number, and convert the result back to a level name.
+        Report that rounded level as the category’s average level.
+        Level‑assignment rules (apply independently to every sub‑category):
+        * Inspect levels in this order: Expert → Advanced → Intermediate → Foundational.
+        * Assign the first level encountered that contains at least two competencies.
+        * If a level has only one competency, continue downward until one with two is found.
+        * If no level contains two competencies, assign the level that has one competency.
+        * If none have any competencies, mark the sub‑category “No level assigned”.
+        Output format
+        Main Category (average level) - Sub‑category (assigned level) - Sub‑category (assigned level) ...
+        List every sub‑category exactly as it appears in the PDF, each preceded by "- " and indented four spaces beneath its main category.
+      </code>
     </div>
   </div>
 
